@@ -11,5 +11,6 @@ namespace HomeBudgetWf
         }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<ExpenseCategory> ExpenseCategories { get; set; }
+        public DbSet<KeyWord> KeyWords { get; set; }
     }
 }
