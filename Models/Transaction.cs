@@ -19,8 +19,6 @@ namespace HomeBudgetWf.Models
         public decimal Balance { get; set; }
         public string? OthersDetails { get; set; }
 
-        //public int ExpenseCategoryId { get; set; }
-        //public ExpenseCategory ExpenseCategory { get; set; }
         public KeyWord? KeyWord { get; set; }
 
 
