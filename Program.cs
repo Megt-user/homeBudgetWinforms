@@ -15,7 +15,7 @@ namespace HomeBudgetWf
         [STAThread]
         static void Main()
         {
-            new TransactionDbServices().AddNewData();
+            //new TransactionServices().AddTestdata();
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

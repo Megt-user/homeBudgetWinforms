@@ -1,23 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using HomeBudgetWf.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
 namespace HomeBudgetWf.DataBase
 {
-    public class TransactionDbServices
+    public class TransactionServices
     {
 
         private DataContext _dataContext;
-        public TransactionDbServices()
+        public TransactionServices()
         {
             _dataContext = new DesignTimeDbContextFactory().CreateDbContext(new String[] { });
         }
 
-        public void AddNewData()
+        public void AddNewData(Transaction transaction)
         {
+            var transactionExist = GetTransaction(transaction.Description);
+            _dataContext.SaveChanges();
+        }
 
+
+
+        private Transaction GetTransaction(string description)
+        {
+            if (string.IsNullOrEmpty(description))
+                return null;
+
+            var transaction = _dataContext.Transactions
+                .Include(Word => Word.KeyWord)
+                .Include(cat => cat.KeyWord.ExpenseCategory)
+                .SingleOrDefault(t => t.Description.Equals(description, StringComparison.InvariantCultureIgnoreCase));
+            return transaction;
+        }
+
+
+        public  void AddTestdata()
+        {
             _dataContext.Transactions.Add(new Transaction()
             {
                 DateOfTransaction = new DateTime(2020, 04, 17),
@@ -90,8 +112,6 @@ namespace HomeBudgetWf.DataBase
 
             });
             _dataContext.SaveChanges();
-
-
         }
     }
 }
