@@ -10,10 +10,10 @@ namespace HomeBudgetWf.DataBase
     {
 
         private DataContext _dataContext;
-        public TransactionDbServices()
-        {
-            _dataContext = new DesignTimeDbContextFactory().CreateDbContext(new String[] { });
-        }
+        //public TransactionDbServices()
+        //{
+        //    _dataContext = new DesignTimeDbContextFactory().CreateDbContext(new String[] { });
+        //}
 
         public void AddNewData()
         {
