@@ -8,23 +8,89 @@ namespace HomeBudgetWf.DataBase
 {
     public class TransactionDbServices
     {
-       
 
-        public static void AddNewData()
+        private DataContext _dataContext;
+        public TransactionDbServices()
         {
-            using (var noko = new DesignTimeDbContextFactory().CreateDbContext(new String[] { }))
+            _dataContext = new DesignTimeDbContextFactory().CreateDbContext(new String[] { });
+        }
+
+        public void AddNewData()
+        {
+
+            _dataContext.Transactions.Add(new Transaction()
             {
-                noko.Transactions.Add(new Transaction()
+                DateOfTransaction = new DateTime(2020, 04, 17),
+                DateOfregistration = new DateTime(2020, 04, 17),
+                Amount = decimal.Parse("136.58"),
+                Balance = decimal.Parse("136.58"),
+                Description = "Rema 1000",
+                OthersDetails = "other....",
+                KeyWord = new KeyWord()
                 {
-                    DateOfTransaction = new DateTime(2020, 04, 17),
-                    DateOfregistration = new DateTime(2020, 04, 17),
-                    Amount = decimal.Parse("136.58"),
-                    Balance = decimal.Parse("136.58"),
-                    Description = "noko",
-                    OthersDetails = "other...."
-                });
-                noko.SaveChanges();
-            }
+                    Value = "Rema",
+                    ExpenseCategory = new ExpenseCategory()
+                    {
+                        Category = "Super"
+                    }
+                }
+
+            });
+            _dataContext.Transactions.Add(new Transaction()
+            {
+                DateOfTransaction = new DateTime(2020, 04, 17),
+                DateOfregistration = new DateTime(2020, 04, 17),
+                Amount = decimal.Parse("136.58"),
+                Balance = decimal.Parse("136.58"),
+                Description = "Escuela SFO",
+                OthersDetails = "other....",
+                KeyWord = new KeyWord()
+                {
+                    Value = "Escuela",
+                    ExpenseCategory = new ExpenseCategory()
+                    {
+                        Category = "Chicos"
+                    }
+                }
+
+            }); _dataContext.Transactions.Add(new Transaction()
+            {
+                DateOfTransaction = new DateTime(2020, 04, 17),
+                DateOfregistration = new DateTime(2020, 04, 17),
+                Amount = decimal.Parse("136.58"),
+                Balance = decimal.Parse("136.58"),
+                Description = "Gulbring cine",
+                OthersDetails = "other....",
+                KeyWord = new KeyWord()
+                {
+                    Value = "Cine",
+                    ExpenseCategory = new ExpenseCategory()
+                    {
+                        Category = "Free time"
+                    }
+                }
+
+            });
+            _dataContext.Transactions.Add(new Transaction()
+            {
+                DateOfTransaction = new DateTime(2020, 04, 17),
+                DateOfregistration = new DateTime(2020, 04, 17),
+                Amount = decimal.Parse("136.58"),
+                Balance = decimal.Parse("136.58"),
+                Description = "Meni supermercado",
+                OthersDetails = "other....",
+                KeyWord = new KeyWord()
+                {
+                    Value = "Meni",
+                    ExpenseCategory = new ExpenseCategory()
+                    {
+                        Category = "Super"
+                    }
+                }
+
+            });
+            _dataContext.SaveChanges();
+
 
         }
     }
