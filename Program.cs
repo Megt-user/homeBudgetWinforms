@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using HomeBudgetWf.DataBase;
 
 namespace HomeBudgetWf
 {
@@ -14,6 +15,7 @@ namespace HomeBudgetWf
         [STAThread]
         static void Main()
         {
+            TransactionDbServices.AddNewData();
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
