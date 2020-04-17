@@ -1,8 +1,7 @@
 ﻿using HomeBudgetWf.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
-namespace HomeBudgetWf
+namespace HomeBudgetWf.DataBase
 {
     public class DataContext : DbContext
     {
