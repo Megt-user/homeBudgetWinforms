@@ -18,7 +18,7 @@ namespace HomeBudgetWf
                 .Build();
             var builder = new DbContextOptionsBuilder<DataContext>();
             var connectionString = configuration.GetConnectionString("Default");
-            builder.UseMySql(connectionString);
+            builder.UseSqlServer(connectionString);
             return new DataContext(builder.Options);
         }
     }
