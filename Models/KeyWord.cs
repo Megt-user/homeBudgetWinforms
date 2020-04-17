@@ -11,10 +11,8 @@ namespace HomeBudgetWf.Models
         public int Id { get; set; }
         public string Value { get; set; }
 
-        public int ExpenseCategoryId { get; set; }
         public ExpenseCategory ExpenseCategory { get; set; }
 
-        public int TransactionId { get; set; }
         public ICollection<Transaction> Transactions { get; set; }
 
     }
