@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using HomeBudgetWf.DataBase;
+using OfficeOpenXml;
 
 // https://stackoverflow.com/a/27509005
 
@@ -25,7 +29,8 @@ namespace HomeBudgetWf
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 Log.Information("start App");
-                RunApp();
+                //RunApp();
+                ReadExcelFile();
                 Application.Run(new TransactionForm());
 
             }
@@ -34,6 +39,13 @@ namespace HomeBudgetWf
 
                 throw;
             }
+        }
+
+        private static void ReadExcelFile()
+        {
+            var streamFile = @"C:\Transactions\TestData\Transactions_FellesSparDin.xlsx";
+            
+
         }
 
         private static void SetUpConfiguration()
@@ -53,8 +65,8 @@ namespace HomeBudgetWf
         {
             // Do not pass any logger in via Dependency Injection, as the class will simply reference the static logger.
             var classThatLogs = new TransactionServices(_Iconfiguration);
-
             classThatLogs.AddTestdata();
+
         }
 
     }
