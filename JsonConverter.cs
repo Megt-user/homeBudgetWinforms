@@ -7,17 +7,18 @@ using Newtonsoft.Json.Linq;
 
 namespace HomeBudgetWf
 {
-    public class JsonConverter
+    public class JsonConverter : IJsonConverter
     {
         private IEnumerable<object> jArray;
 
-        public static List<Transaction> ConvertJArrayToTransactionList(JArray jsonArray)
+        public List<Transaction> ConvertJArrayToTransactionList(JArray jsonArray)
         {
             return jsonArray.Select(item => (Transaction)ParseObjectProperties(new Transaction(), item)).ToList();
         }
 
         public static object ParseObjectProperties(Object model, JToken json)
         {
+
             var type = model.GetType();
             var typeProperties = type.GetProperties();
 
@@ -35,7 +36,7 @@ namespace HomeBudgetWf
             }
             return model;
         }
-        public static object ParseObjectValue(string type, string value)
+       public static object ParseObjectValue(string type, string value)
         {
             switch (type.ToLower())
             {

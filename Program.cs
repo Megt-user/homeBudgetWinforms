@@ -8,8 +8,6 @@ using Serilog;
 using HomeBudgetWf.DataBase;
 using OfficeOpenXml;
 
-// https://stackoverflow.com/a/27509005
-
 namespace HomeBudgetWf
 {
     static class Program
@@ -44,7 +42,8 @@ namespace HomeBudgetWf
         private static void ReadExcelFile()
         {
             var streamFile = @"C:\Transactions\TestData\Transactions_FellesSparDin.xlsx";
-            
+            var noko = new ExcelConverter().GetJsonArrayfromExcelfile(streamFile);
+
 
         }
 
