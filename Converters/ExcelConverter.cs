@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using HomeBudgetWf.Models;
 using HomeBudgetWf.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -11,8 +8,7 @@ using OfficeOpenXml;
 using OfficeOpenXml.Table;
 using Serilog;
 
-
-namespace HomeBudgetWf
+namespace HomeBudgetWf.Converters
 {
    
     public class ExcelConverter
