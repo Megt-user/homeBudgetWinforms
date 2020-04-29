@@ -36,6 +36,30 @@ namespace HomeBudgetWf.Converters
             }
             return model;
         }
+
+        public static object ParseJtokenToTransactionAbstractCalss(Object model, JToken json)
+        {
+
+            var type = model.GetType();
+            var typeProperties = type.GetProperties();
+
+            //SantanderRioTransactionClass santanderRio= new SantanderRioTransactionClass(json);
+            
+            foreach (var property in typeProperties)
+            {
+                var propertyName = property.Name;
+                var jsonPropertyValue = json[propertyName];
+                if (jsonPropertyValue != null)
+                {
+                    var jtokenValue = jsonPropertyValue.ToString();
+                    var propertyType = property.PropertyType.Name;
+                    var value = ParseObjectValue(propertyType, jtokenValue);
+                    property.SetValue(model, value);
+                }
+            }
+            return model;
+        }
+
         //public static T ParseJtokenToType<T>(JToken json)
         //{
         //    var type = typeof(T);
