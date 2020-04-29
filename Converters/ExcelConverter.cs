@@ -25,7 +25,7 @@ namespace HomeBudgetWf.Converters
                     if (expensesWSheet != null)
                     {
                         var transactions = expensesWSheet.Tables.FirstOrDefault();
-                        jsonArray = ExcelConverter.GetJsonFromTable(transactions);
+                        jsonArray = ExcelConverter.ConvertExcelTableToJArray(transactions);
                     }
                     Log.Information("there is {TransactionCounts}", jsonArray.Count);
                 }
@@ -37,7 +37,7 @@ namespace HomeBudgetWf.Converters
 
             return jsonArray;
         }
-        public static JArray GetJsonFromTable(ExcelTable table)
+        public static JArray ConvertExcelTableToJArray(ExcelTable table)
         {
 
             var jsonArray = new JArray();

@@ -43,8 +43,9 @@ namespace HomeBudgetWf
         private static void ReadExcelFile()
         {
             var streamFile = @"C:\Transactions\TestData\Transactions_FellesSparDin.xlsx";
-            var noko = new ExcelConverter().GetJsonArrayfromExcelfile(streamFile);
-
+            
+            var transactionJsonArray = new ExcelConverter().GetJsonArrayfromExcelfile(streamFile);
+            var transactionList = JsonConverterClass.ConvetJsonArrayToListTransaction(transactionJsonArray);
 
         }
 

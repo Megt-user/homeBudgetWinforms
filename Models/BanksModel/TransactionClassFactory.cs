@@ -4,33 +4,33 @@ namespace HomeBudgetWf.Models.BanksModel
 {
     public abstract class TransactionClassFactory
     {
-        public abstract TransactionAbstractClass GetTransactionClass();
+        public abstract TransactionAbstractClass CreateTransactionClass();
     }
 
     public class SantanderRioFactory : TransactionClassFactory
     {
-        public JToken _jToken;
+        public JToken JToken;
 
         public SantanderRioFactory(JToken jToken)
         {
-            _jToken = jToken;
+            JToken = jToken;
         }
 
-        public override TransactionAbstractClass GetTransactionClass()
+        public override TransactionAbstractClass CreateTransactionClass()
         {
-            return new SantanderRioTransactionClass(_jToken);
+            return new SantanderRioTransactionClass(JToken);
         }
     }
-    public class SparebankenDInFactory : TransactionClassFactory
+    public class SparebankenDinFactory : TransactionClassFactory
     {
         public JToken _jToken;
 
-        public SparebankenDInFactory(JToken jToken)
+        public SparebankenDinFactory(JToken jToken)
         {
             _jToken = jToken;
         }
 
-        public override TransactionAbstractClass GetTransactionClass()
+        public override TransactionAbstractClass CreateTransactionClass()
         {
             return new SparebankenDinTransactionClass(_jToken);
         }
