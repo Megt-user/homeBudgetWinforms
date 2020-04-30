@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using HomeBudgetWf.Converters;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using HomeBudgetWf.DataBase;
 using OfficeOpenXml;
-
-// https://stackoverflow.com/a/27509005
 
 namespace HomeBudgetWf
 {
@@ -45,6 +44,8 @@ namespace HomeBudgetWf
         {
             var streamFile = @"C:\Transactions\TestData\Transactions_FellesSparDin.xlsx";
             
+            var transactionJsonArray = new ExcelConverter().GetJsonArrayfromExcelfile(streamFile);
+            var transactionList = JsonConverter.ConvetJsonArrayToListTransaction(transactionJsonArray);
 
         }
 

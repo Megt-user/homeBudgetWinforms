@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using HomeBudgetWf.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -10,9 +8,9 @@ using OfficeOpenXml;
 using OfficeOpenXml.Table;
 using Serilog;
 
-
-namespace HomeBudgetWf
+namespace HomeBudgetWf.Converters
 {
+   
     public class ExcelConverter
     {
         public JArray GetJsonArrayfromExcelfile(string path)
@@ -27,7 +25,7 @@ namespace HomeBudgetWf
                     if (expensesWSheet != null)
                     {
                         var transactions = expensesWSheet.Tables.FirstOrDefault();
-                        jsonArray = ExcelConverter.GetJsonFromTable(transactions);
+                        jsonArray = ExcelConverter.ConvertExcelTableToJArray(transactions);
                     }
                     Log.Information("there is {TransactionCounts}", jsonArray.Count);
                 }
@@ -39,7 +37,7 @@ namespace HomeBudgetWf
 
             return jsonArray;
         }
-        public static JArray GetJsonFromTable(ExcelTable table)
+        public static JArray ConvertExcelTableToJArray(ExcelTable table)
         {
 
             var jsonArray = new JArray();
