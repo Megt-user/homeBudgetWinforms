@@ -11,34 +11,6 @@ namespace HomeBudgetWf.Converters
 {
     public class JsonConverter
     {
-        private IEnumerable<object> jArray;
-
-        //public List<TransactionAbstractClass> ConvertJArrayToTransactionList(JArray jsonArray)
-        //{
-        //    //return jsonArray.Select(item => ParseObjectProperties<SantanderRioTransactionClass>(item)).ToList();
-        //}
-
-        public static object ParseObjectProperties(Object model, JToken json)
-        {
-
-            var type = model.GetType();
-            var typeProperties = type.GetProperties();
-
-            foreach (var property in typeProperties)
-            {
-                var propertyName = property.Name;
-                var jsonPropertyValue = json[propertyName];
-                if (jsonPropertyValue != null)
-                {
-                    var jtokenValue = jsonPropertyValue.ToString();
-                    var propertyType = property.PropertyType.Name;
-                    var value = ParseObjectValue(propertyType, jtokenValue);
-                    property.SetValue(model, value);
-                }
-            }
-            return model;
-        }
-
         public static List<TransactionAbstractClass> ConvetJsonArrayToListTransaction(JArray jsonArray)
         {
             var transactions = new List<TransactionAbstractClass>();
@@ -86,30 +58,26 @@ namespace HomeBudgetWf.Converters
             return transactionFactory;
         }
 
-        //public static T ParseJtokenToType<T>(JToken json)
-        //{
-        //    var type = typeof(T);
+        public static object ParseObjectProperties(Object model, JToken json)
+        {
 
-        //    TransactionAbstractClass transaction;
-        //    //TODO createInstance of Abstract Class
-        //    type.GetMethods().Initialize();
-        //    //var model = Activator.CreateInstance(type);
-        //    var typeProperties = type.GetProperties();
-        //    Object model;
-        //    foreach (var property in typeProperties)
-        //    {
-        //        var propertyName = property.Name;
-        //        var jsonPropertyValue = json[propertyName];
-        //        if (jsonPropertyValue != null)
-        //        {
-        //            var jtokenValue = jsonPropertyValue.ToString();
-        //            var propertyType = property.PropertyType.Name;
-        //            var value = ParseObjectValue(propertyType, jtokenValue);
-        //            property.SetValue(model, value);
-        //        }
-        //    }
-        //    return (T) model;
-        //}
+            var type = model.GetType();
+            var typeProperties = type.GetProperties();
+
+            foreach (var property in typeProperties)
+            {
+                var propertyName = property.Name;
+                var jsonPropertyValue = json[propertyName];
+                if (jsonPropertyValue != null)
+                {
+                    var jtokenValue = jsonPropertyValue.ToString();
+                    var propertyType = property.PropertyType.Name;
+                    var value = ParseObjectValue(propertyType, jtokenValue);
+                    property.SetValue(model, value);
+                }
+            }
+            return model;
+        }
         public static object ParseObjectValue(string type, string value)
         {
             switch (type.ToLower())
