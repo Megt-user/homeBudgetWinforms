@@ -43,7 +43,7 @@ namespace HomeBudgetWf
         private static void ReadExcelFile()
         {
             var streamFile = @"C:\Transactions\TestData\Transactions_FellesSparDin.xlsx";
-            
+
             var transactionJsonArray = new ExcelConverter().GetJsonArrayfromExcelfile(streamFile);
             var transactionList = JsonConverter.ConvetJsonArrayToListTransaction(transactionJsonArray);
 
@@ -51,6 +51,7 @@ namespace HomeBudgetWf
 
         private static void SetUpConfiguration()
         {
+
             _Iconfiguration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .Build();
@@ -59,7 +60,6 @@ namespace HomeBudgetWf
         {
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(_Iconfiguration)
-                //.WriteTo.Console()
                 .CreateLogger();
         }
         private static void RunApp()
