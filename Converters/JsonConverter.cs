@@ -11,10 +11,10 @@ namespace HomeBudgetWf.Converters
 {
     public class JsonConverter
     {
-        public static List<TransactionAbstractClass> ConvetJsonArrayToListTransaction(JArray jsonArray)
+        public static TransactionAbstractClass[] ConvetJsonArrayToListTransaction(JArray jsonArray)
         {
             var transactions = new List<TransactionAbstractClass>();
-            for (int i = 0; i <= jsonArray.Count; i++)
+            for (int i = 0; i < jsonArray.Count; i++)
             {
                 TransactionClassFactory transactionFactory = null;
                 try
@@ -39,7 +39,7 @@ namespace HomeBudgetWf.Converters
                     Log.Error(e, "Error can't create Transaction abstarct class from Jtoken index/row {jArrayIndex}", i);
                 }
             }
-            return transactions;
+            return transactions.ToArray();
         }
 
         public static TransactionClassFactory GetTransactionClassFromJtoken(JToken jToken)
