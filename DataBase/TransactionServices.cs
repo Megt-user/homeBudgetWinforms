@@ -28,9 +28,9 @@ namespace HomeBudgetWf.DataBase
         {
             var transactionExist = GetTransactionByDescription(transaction.Description);
             var transactions = GetTransactionByDateTime(transaction.DateOfTransaction);
-            if (transactions!= null && transactions.Any())
+            if (transactions != null && transactions.Any())
             {
-                if (transactions.Any(tr=>tr.Description.Equals(transaction.Description)))
+                if (transactions.Any(tr => tr.Description.Equals(transaction.Description)))
                 {
                     return;
                 }
@@ -66,7 +66,7 @@ namespace HomeBudgetWf.DataBase
         }
 
 
-        public  void AddTestdata()
+        public void AddTestdata()
         {
             var structuredData = new StructuredData();
             var simpleData = "This is a string.";
@@ -153,10 +153,40 @@ namespace HomeBudgetWf.DataBase
             _dataContext.SaveChanges();
         }
 
+        public KeyWord AddKeyword(string keyword, string categoryName)
+        {
+            var KeyWord = new KeyWord()
+            {
+               Value = "Meni",
+            };
+            var expenseCategory = new ExpenseCategory()
+            {
+                Category = "Super"
+            };
+            _dataContext.KeyWords.Add(KeyWord);
+            
+            return KeyWord;
+        }
+        public ExpenseCategory GetExpenseCategory(string keyword)
+        {
+            var keyWord = _dataContext.ExpenseCategories
+                .First(ke => ke.Category == keyword);
+            return keyWord ?? null;
+        }
+
+        public KeyWord GetKeyword(string keyword)
+        {
+            var keyWord = _dataContext.KeyWords
+                .Include(sub => sub.ExpenseCategory)
+                .First(ke => ke.Value == keyword);
+            return keyWord ?? null;
+        }
+
+
         public KeyWord[] GetKeyWords()
         {
-            var keyWords= _dataContext.KeyWords
-                .Include(sub=>sub.ExpenseCategory);
+            var keyWords = _dataContext.KeyWords
+                .Include(sub => sub.ExpenseCategory);
             return keyWords.Any() ? keyWords.ToArray() : null;
         }
     }
