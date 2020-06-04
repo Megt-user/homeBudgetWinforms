@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using HomeBudgetWf.Models;
@@ -25,21 +26,42 @@ namespace HomeBudgetWf.DataBase
 
         public void AddNewData(Transaction transaction)
         {
-            var transactionExist = GetTransaction(transaction.Description);
+            var transactionExist = GetTransactionByDescription(transaction.Description);
+            var transactions = GetTransactionByDateTime(transaction.DateOfTransaction);
+            if (transactions!= null && transactions.Any())
+            {
+                if (transactions.Any(tr=>tr.Description.Equals(transaction.Description)))
+                {
+                    return;
+                }
+            }
+
+            _dataContext.Transactions.Add(new Transaction(transaction));
             _dataContext.SaveChanges();
         }
 
 
 
-        private Transaction GetTransaction(string description)
+        public Transaction GetTransactionByDescription(string description)
         {
             if (string.IsNullOrEmpty(description))
                 return null;
 
             var transaction = _dataContext.Transactions
-                .Include(Word => Word.KeyWord)
+                .Include(word => word.KeyWord)
                 .Include(cat => cat.KeyWord.ExpenseCategory)
                 .SingleOrDefault(t => t.Description.Equals(description, StringComparison.InvariantCultureIgnoreCase));
+            return transaction;
+        }
+        public IQueryable<Transaction> GetTransactionByDateTime(DateTime dateTime)
+        {
+            if (string.IsNullOrEmpty(dateTime.ToString(CultureInfo.InvariantCulture)))
+                return null;
+
+            var transaction = _dataContext.Transactions
+                .Include(word => word.KeyWord)
+                .Include(cat => cat.KeyWord.ExpenseCategory)
+                .Where(t => t.DateOfTransaction.Equals(dateTime));
             return transaction;
         }
 
@@ -129,6 +151,13 @@ namespace HomeBudgetWf.DataBase
 
             });
             _dataContext.SaveChanges();
+        }
+
+        public KeyWord[] GetKeyWords()
+        {
+            var keyWords= _dataContext.KeyWords
+                .Include(sub=>sub.ExpenseCategory);
+            return keyWords.Any() ? keyWords.ToArray() : null;
         }
     }
 }
