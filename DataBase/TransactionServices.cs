@@ -43,6 +43,17 @@ namespace HomeBudgetWf.DataBase
 
 
 
+        public Transaction[] GetTransactionByKeyWord(string keyword)
+        {
+            if (string.IsNullOrEmpty(keyword))
+                return null;
+            var key = GetKeyword(keyword);
+            var transaction = _dataContext.Transactions
+                .Include(cat => cat.KeyWord)
+                .Include(cat => cat.KeyWord.ExpenseCategory)
+                .Where(word => word.KeyWord.Id == key.Id).ToArray();
+            return transaction;
+        }
         public Transaction GetTransactionByDescription(string description)
         {
             if (string.IsNullOrEmpty(description))
