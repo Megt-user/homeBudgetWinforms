@@ -12,8 +12,8 @@ namespace HomeBudgetWf.Models
         public string Value { get; set; }
 
         public ExpenseCategory? ExpenseCategory { get; set; }
+        public ICollection<Transaction> Transactions { get; set; }
 
-        public ICollection<Transaction>? Transactions { get; set; }
 
     }
 }

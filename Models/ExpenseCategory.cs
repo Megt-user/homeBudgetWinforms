@@ -10,7 +10,8 @@ namespace HomeBudgetWf.Models
         [Key]
         public int Id { get; set; }
         public string Category { get; set; }
+        public ICollection<KeyWord> KeyWords { get; set; }
 
-        public ICollection<KeyWord>? KeyWords { get; set; }
+
     }
 }
