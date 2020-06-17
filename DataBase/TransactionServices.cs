@@ -80,75 +80,98 @@ namespace HomeBudgetWf.DataBase
             Log.Error(new Exception("This is an exception."), "Here's an Error message.");
             Log.Fatal("Here's a Fatal message.");
 
+            List<ExpenseCategory> expenseCategories = new List<ExpenseCategory>()
+            {
+                new ExpenseCategory(){Category = "Super"},
+                new ExpenseCategory(){Category = "Free time"},
+                new ExpenseCategory(){Category = "Chicos"},
+            };
+            List<KeyWord> keyWords = new List<KeyWord>()
+            {
+                new KeyWord(){Value = "Rema",ExpenseCategory =expenseCategories[0]},
+                new KeyWord(){Value = "Cine",ExpenseCategory =expenseCategories[1]},
+                new KeyWord(){Value = "escuela",ExpenseCategory =expenseCategories[2]},
+                new KeyWord(){Value = "Meni",ExpenseCategory =expenseCategories[0]},
+                new KeyWord(){Value = "Kiwy",ExpenseCategory =expenseCategories[0]},
+                new KeyWord(){Value = "Hovden",ExpenseCategory =expenseCategories[1]},
+            };
             _dataContext.Transactions.Add(new Transaction()
             {
-                DateOfTransaction = new DateTime(2020, 04, 17),
+                DateOfTransaction = new DateTime(2020, 04, 01),
                 DateOfregistration = new DateTime(2020, 04, 17),
-                Amount = decimal.Parse("136.58"),
-                Balance = decimal.Parse("136.58"),
+                Amount = decimal.Parse("10.50"),
+                Balance = decimal.Parse("100"),
+                Description = "Noko Hovden 1000",
+                OthersDetails = "other....",
+                KeyWord = keyWords[5]
+
+            });  
+            _dataContext.Transactions.Add(new Transaction()
+            {
+                DateOfTransaction = new DateTime(2020, 04, 01),
+                DateOfregistration = new DateTime(2020, 04, 17),
+                Amount = decimal.Parse("10.50"),
+                Balance = decimal.Parse("100"),
                 Description = "Rema 1000",
                 OthersDetails = "other....",
-                KeyWord = new KeyWord()
-                {
-                    Value = "Rema",
-                    ExpenseCategory = new ExpenseCategory()
-                    {
-                        Category = "Super"
-                    }
-                }
+                KeyWord = keyWords[0]
 
             });
             _dataContext.Transactions.Add(new Transaction()
             {
-                DateOfTransaction = new DateTime(2020, 04, 17),
+                DateOfTransaction = new DateTime(2020, 04, 03),
                 DateOfregistration = new DateTime(2020, 04, 17),
-                Amount = decimal.Parse("136.58"),
-                Balance = decimal.Parse("136.58"),
-                Description = "Escuela SFO",
-                OthersDetails = "other....",
-                KeyWord = new KeyWord()
-                {
-                    Value = "Escuela",
-                    ExpenseCategory = new ExpenseCategory()
-                    {
-                        Category = "Chicos"
-                    }
-                }
-
-            }); _dataContext.Transactions.Add(new Transaction()
-            {
-                DateOfTransaction = new DateTime(2020, 04, 17),
-                DateOfregistration = new DateTime(2020, 04, 17),
-                Amount = decimal.Parse("136.58"),
-                Balance = decimal.Parse("136.58"),
+                Amount = decimal.Parse("10"),
+                Balance = decimal.Parse("70"),
                 Description = "Gulbring cine",
                 OthersDetails = "other....",
-                KeyWord = new KeyWord()
-                {
-                    Value = "Cine",
-                    ExpenseCategory = new ExpenseCategory()
-                    {
-                        Category = "Free time"
-                    }
-                }
+                KeyWord = keyWords[1]
+
 
             });
             _dataContext.Transactions.Add(new Transaction()
             {
-                DateOfTransaction = new DateTime(2020, 04, 17),
+                DateOfTransaction = new DateTime(2020, 04, 02),
                 DateOfregistration = new DateTime(2020, 04, 17),
-                Amount = decimal.Parse("136.58"),
-                Balance = decimal.Parse("136.58"),
+                Amount = decimal.Parse("20"),
+                Balance = decimal.Parse("80"),
+                Description = "Escuela SFO",
+                OthersDetails = "other....",
+                KeyWord = keyWords[2]
+
+            });
+
+            _dataContext.Transactions.Add(new Transaction()
+            {
+                DateOfTransaction = new DateTime(2020, 04, 04),
+                DateOfregistration = new DateTime(2020, 04, 17),
+                Amount = decimal.Parse("15"),
+                Balance = decimal.Parse("55"),
                 Description = "Meni supermercado",
                 OthersDetails = "other....",
-                KeyWord = new KeyWord()
-                {
-                    Value = "Meni",
-                    ExpenseCategory = new ExpenseCategory()
-                    {
-                        Category = "Super"
-                    }
-                }
+                KeyWord = keyWords[3]
+
+            });
+            _dataContext.Transactions.Add(new Transaction()
+            {
+                DateOfTransaction = new DateTime(2020, 04, 04),
+                DateOfregistration = new DateTime(2020, 04, 17),
+                Amount = decimal.Parse("15"),
+                Balance = decimal.Parse("55"),
+                Description = "Kiwy supermercado",
+                OthersDetails = "other....",
+                KeyWord = keyWords[4]
+
+            });
+            _dataContext.Transactions.Add(new Transaction()
+            {
+                DateOfTransaction = new DateTime(2020, 04, 04),
+                DateOfregistration = new DateTime(2020, 04, 17),
+                Amount = decimal.Parse("5"),
+                Balance = decimal.Parse("50"),
+                Description = "Meni supermercado",
+                OthersDetails = "other....",
+                KeyWord = keyWords[3]
 
             });
             _dataContext.SaveChanges();
@@ -158,14 +181,14 @@ namespace HomeBudgetWf.DataBase
         {
             var KeyWord = new KeyWord()
             {
-               Value = "Meni",
+                Value = "Meni",
             };
             var expenseCategory = new ExpenseCategory()
             {
                 Category = "Super"
             };
             _dataContext.KeyWords.Add(KeyWord);
-            
+
             return KeyWord;
         }
         public ExpenseCategory GetExpenseCategory(string keyword)
