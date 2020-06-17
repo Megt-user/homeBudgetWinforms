@@ -21,7 +21,8 @@ namespace HomeBudgetWf.DataBase
         {
             _configuration = configuration;
             Log.Information("the DB ConnectionString Is:{ConnectionString}", _configuration.GetConnectionString("default"));
-            _dataContext = new DesignTimeDbContextFactory(configuration).CreateDbContext(new String[] { });
+
+            _dataContext = new DesignTimeDbContextFactory().CreateDbContext(new String[] { });
         }
 
         public void AddNewData(Transaction transaction)
