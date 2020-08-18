@@ -40,6 +40,7 @@ namespace HomeBudgetWf.Utilities
                             }
                             else
                             {
+                                // try to resolev the missmatch
                                 var category = Helpers.ResolveExpenseCategories(categories);
                                 if (category != null)
                                 {

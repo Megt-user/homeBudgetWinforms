@@ -32,8 +32,8 @@ namespace HomeBudgetWf
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 Log.Information("start App");
-                //RunApp();
-                ReadExcelFile();
+                RunApp();
+                //ReadExcelFile();
                 Application.Run(new TransactionForm());
             }
             catch (Exception exception)
