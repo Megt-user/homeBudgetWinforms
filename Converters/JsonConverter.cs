@@ -9,8 +9,11 @@ using Serilog;
 
 namespace HomeBudgetWf.Converters
 {
+
+
     public class JsonConverter
     {
+        private static List<ExpenseCategory> _expenseCategories;
         public static TransactionAbstractClass[] ConvetJsonArrayToListTransaction(JArray jsonArray)
         {
             var transactions = new List<TransactionAbstractClass>();
@@ -42,6 +45,54 @@ namespace HomeBudgetWf.Converters
             return transactions.ToArray();
         }
 
+
+        public static KeyWord[] ConvertJsonArrayToListKeyWords(JArray jsonArray)
+        {
+            var keyWords = new List<KeyWord>();
+            for (int i = 0; i < jsonArray.Count; i++)
+            {
+                KeyWord keyWord = null;
+                try
+                {
+                    keyWord = GetTransactionClassFromJtoken(jsonArray[i]);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "Error Geting Transaction from Jtoken index/row {jArrayIndex}", i);
+                }
+
+                try
+                {
+                    TransactionAbstractClass transactionAbstract = transactionFactory?.CreateTransactionClass();
+                    if (transactionAbstract != null)
+                    {
+                        transactions.Add(transactionAbstract);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "Error can't create Transaction abstarct class from Jtoken index/row {jArrayIndex}", i);
+                }
+            }
+
+            return keyWords.ToArray();
+        }
+
+        public static KeyWord GetKeyWord(JToken jToken)
+        {
+            KeyWord keyWord = new KeyWord();
+            _expenseCategories = _expenseCategories ?? new List<ExpenseCategory>();
+            var keyWordValue = jToken.Value<string>("Value");
+            var expenseCategory = jToken.Value<string>("ExpenseCategory");
+            if (_expenseCategories.Any(exp=>exp.Category.Equals(expenseCategory,StringComparison.InvariantCultureIgnoreCase)))
+            {
+                
+            }
+
+
+
+            return keyWord;
+        }
         public static TransactionClassFactory GetTransactionClassFromJtoken(JToken jToken)
         {
             var banckName = Helpers.GetBanckName(jToken);

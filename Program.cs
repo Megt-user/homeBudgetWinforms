@@ -61,6 +61,9 @@ namespace HomeBudgetWf
             var transactionJsonArray = new ExcelConverter().GetJsonArrayfromExcelfile(streamFile);
             var transactionList = JsonConverter.ConvetJsonArrayToListTransaction(transactionJsonArray);
             var keyWords = _TransactionServices.GetKeyWords();
+            //TODO get KeyWords from Json/Excel
+            //var keyWords = _TransactionServices.GetKeyWords(Json/Excel file);
+
             var transactionListToSave = Converter.GetTransactionListToSave(transactionList, keyWords);
         }
 
