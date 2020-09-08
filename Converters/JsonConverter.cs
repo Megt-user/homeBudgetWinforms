@@ -49,24 +49,39 @@ namespace HomeBudgetWf.Converters
         public static KeyWord[] ConvertJsonArrayToListKeyWords(JArray jsonArray)
         {
             var keyWords = new List<KeyWord>();
+            List<ExpenseCategory> expenseCategories = new List<ExpenseCategory>();
             for (int i = 0; i < jsonArray.Count; i++)
             {
-                KeyWord keyWord = null;
+                string keyWordJson= null;
+                string categoryJson= null;
                 try
                 {
-                    keyWord = GetTransactionClassFromJtoken(jsonArray[i]);
+                    keyWordJson = jsonArray[i].Value<string>("KeyWord") ?? "Now KeyWord found";
+                    categoryJson = jsonArray[i].Value<string>("Category") ?? "Now Category found";
                 }
                 catch (Exception e)
                 {
-                    Log.Error(e, "Error Geting Transaction from Jtoken index/row {jArrayIndex}", i);
+                    Log.Error(e, "Error Geting keyWord from Jtoken index/row {jArrayIndex}", i);
                 }
 
                 try
                 {
-                    TransactionAbstractClass transactionAbstract = transactionFactory?.CreateTransactionClass();
-                    if (transactionAbstract != null)
+                    KeyWord keyWord = new KeyWord();
+                    if (string.IsNullOrEmpty(keyWordJson)&& !string.IsNullOrEmpty(categoryJson))
                     {
-                        transactions.Add(transactionAbstract);
+                        if(expenseCategories.Any(e=>e.Category.Equals(categoryJson)))
+                        {
+                            keyWord.ExpenseCategory = expenseCategories.First(e => e.Category.Equals(categoryJson));
+                        }
+                        else
+                        {
+                            keyWord.ExpenseCategory = new ExpenseCategory()
+                            {
+                                Category = categoryJson
+                            };
+                        }
+                        keyWord.Value = keyWordJson;
+                        keyWords.Add(keyWord);
                     }
                 }
                 catch (Exception e)
