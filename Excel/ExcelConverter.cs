@@ -8,7 +8,7 @@ using OfficeOpenXml;
 using OfficeOpenXml.Table;
 using Serilog;
 
-namespace HomeBudgetWf.Converters
+namespace HomeBudgetWf.Excel
 {
    
     public class ExcelConverter

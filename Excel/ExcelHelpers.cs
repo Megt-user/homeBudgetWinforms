@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using OfficeOpenXml;
-using Serilog;
 
-namespace HomeBudgetWf.Utilities
+namespace HomeBudgetWf.Excel
 {
     public class ExcelHelpers
     {

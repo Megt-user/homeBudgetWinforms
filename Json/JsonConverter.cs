@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using HomeBudgetWf.Models;
 using HomeBudgetWf.Models.BanksModel;
-using HomeBudgetWf.Utilities;
 using Newtonsoft.Json.Linq;
 using Serilog;
 
-namespace HomeBudgetWf.Converters
+namespace HomeBudgetWf.Json
 {
-
-
     public class JsonConverter
     {
         private static List<ExpenseCategory> _expenseCategories;
