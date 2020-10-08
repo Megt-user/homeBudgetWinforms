@@ -1,13 +1,15 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using HomeBudgetWf.Utilities;
+using Newtonsoft.Json.Linq;
 
 namespace HomeBudgetWf.Models.BanksModel
 {
-    public abstract class TransactionClassFactory
+    
+    public abstract class TransactionClass
     {
         public abstract TransactionAbstractClass CreateTransactionClass();
     }
 
-    public class SantanderRioFactory : TransactionClassFactory
+    public class SantanderRioFactory : TransactionClass
     {
         public JToken JToken;
 
@@ -21,7 +23,7 @@ namespace HomeBudgetWf.Models.BanksModel
             return new SantanderRioTransactionClass(JToken);
         }
     }
-    public class SparebankenDinFactory : TransactionClassFactory
+    public class SparebankenDinFactory : TransactionClass
     {
         public JToken _jToken;
 

@@ -19,10 +19,10 @@ namespace HomeBudgetWf.Converters
             var transactions = new List<TransactionAbstractClass>();
             for (int i = 0; i < jsonArray.Count; i++)
             {
-                TransactionClassFactory transactionFactory = null;
+                TransactionClass transactionClass = null;
                 try
                 {
-                    transactionFactory = GetTransactionClassFromJtoken(jsonArray[i]);
+                    transactionClass = TransactionFactory.GetTransactionClassFromJtoken(jsonArray[i]);
                 }
                 catch (Exception e)
                 {
@@ -31,7 +31,7 @@ namespace HomeBudgetWf.Converters
 
                 try
                 {
-                    TransactionAbstractClass transactionAbstract = transactionFactory?.CreateTransactionClass();
+                    TransactionAbstractClass transactionAbstract = transactionClass?.CreateTransactionClass();
                     if (transactionAbstract != null)
                     {
                         transactions.Add(transactionAbstract);
@@ -91,21 +91,7 @@ namespace HomeBudgetWf.Converters
 
             return keyWord;
         }
-        public static TransactionClassFactory GetTransactionClassFromJtoken(JToken jToken)
-        {
-            var banckName = Helpers.GetBanckName(jToken);
-            TransactionClassFactory transactionFactory = null;
-            switch (banckName)
-            {
-                case "Santander Rio":
-                    transactionFactory = new SantanderRioFactory(jToken);
-                    break;
-                default:
-                    transactionFactory = new SparebankenDinFactory(jToken);
-                    break;
-            }
-            return transactionFactory;
-        }
+        
 
         public static object ParseObjectProperties(Object model, JToken json)
         {
