@@ -144,5 +144,14 @@ namespace HomeBudgetWf.Json
                     return null;
             }
         }
+        public static List<string> GetListOfKeyFromJArray(JArray jsonArray)
+        {
+            var namesList = new List<string>();
+            var jsonDefaultObject = jsonArray.Children<JObject>().FirstOrDefault();
+            if (jsonDefaultObject != null)
+                namesList.AddRange(jsonDefaultObject.Properties().Select(prop => prop.Name));
+
+            return namesList;
+        }
     }
 }

@@ -193,5 +193,101 @@ namespace HomeBudgetWf.Utilities
 
             return norwegianCities;
         }
+
+        public static object GetPropertyValue(object model, string propertyName)
+        {
+            try
+            {
+                var properties = GetPropertiesNamesFromObject(model);
+                if (properties.Contains(propertyName))
+                {
+                    object result = model.GetType().GetProperty(propertyName).GetValue(model, null);
+                    return result;
+                }
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        public static List<string> GetPropertiesNamesFromObject(object model)
+        {
+            var properties = model?.GetType().GetProperties();
+            return properties?.Select(prop => prop.Name).ToList();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="categories"></param>
+        /// <param name="transactionWithCategories"></param>
+        /// <returns></returns>
+        public static List<string> GetExtractionCategories(List<TransactionWithCategory> transactionWithCategories, bool? extraction = null)
+        {
+            List<string> categoryList = new List<string>();
+
+            var categories = transactionWithCategories.Select(m => m.Category).Distinct().ToList();
+            if (extraction.HasValue)
+            {
+                if (extraction.GetValueOrDefault())
+                {
+                    categoryList = categories.Where(category => transactionWithCategories.Where(mv => mv.Category == category).Any(mv => mv.Amount < 0)).ToList();
+                }
+                else
+                {
+                    categoryList = categories.Where(category => transactionWithCategories.Where(mv => mv.Category == category).Any(mv => mv.Amount > 0)).ToList();
+                }
+            }
+            else
+            {
+                categoryList = categories;
+            }
+
+            return categoryList;
+        }
+
+        public static List<TransactionWithCategory> GetMonthYearTransaction(List<TransactionWithCategory> transactionWithCategories, int? year = null, int? month = null, bool? extraction = null)
+        {
+            List<TransactionWithCategory> selectedTransactionWithCategories = new List<TransactionWithCategory>();
+
+            if (year.HasValue)
+            {
+                if (month.HasValue)
+                {
+                    selectedTransactionWithCategories = transactionWithCategories.Where(mov => !string.IsNullOrEmpty(mov.Category) && mov.DateOfTransaction.Year == year && mov.DateOfTransaction.Month == month).ToList();
+                }
+                else
+                {
+                    selectedTransactionWithCategories = transactionWithCategories.Where(mov => !string.IsNullOrEmpty(mov.Category) && mov.DateOfTransaction.Year == year).ToList();
+                }
+            }
+            else
+            {
+
+                if (month.HasValue)
+                {
+                    selectedTransactionWithCategories = transactionWithCategories.Where(mov => !string.IsNullOrEmpty(mov.Category) && mov.DateOfTransaction.Month == month).ToList();
+                }
+                else
+                {
+                    selectedTransactionWithCategories = transactionWithCategories.Where(mov => !string.IsNullOrEmpty(mov.Category)).ToList();
+                }
+            }
+
+            if (extraction.HasValue)
+            {
+                List<TransactionWithCategory> newSelectedTransactionWithCategories;
+                if (extraction.GetValueOrDefault())
+                    newSelectedTransactionWithCategories = transactionWithCategories.Where(mov => mov.Amount < 0).ToList();
+                else
+                    newSelectedTransactionWithCategories = transactionWithCategories.Where(mov => mov.Amount > 0).ToList();
+
+                selectedTransactionWithCategories = newSelectedTransactionWithCategories;
+            }
+            return selectedTransactionWithCategories;
+        }
     }
+
+
 }
