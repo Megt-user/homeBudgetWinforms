@@ -33,7 +33,7 @@ namespace HomeBudgetWf.Excel
             var endTableCellAdress = ExcelHelpers.AddRowAndColumnToCellAddress(_StartCell, movementsModel.Count, propertyNames.Count - 1);
 
             // Create Excel table Header
-            excelTable = CreateExcelTable(wsSheet, tableName, propertyNames, _StartCell, endTableCellAdress);
+            excelTable = CreateExcelTable(ref wsSheet, tableName, propertyNames, _StartCell, endTableCellAdress);
 
             for (int row = 0; row < movementsModel.Count; row++)
             {
@@ -43,12 +43,13 @@ namespace HomeBudgetWf.Excel
                     var propertyValue = Helpers.GetPropertyValue(movementsModel[row], propertyNames[column]);
                     string tableCellAdress = ExcelHelpers.AddRowAndColumnToCellAddress(_StartCell, row + 1, column);
                     excelTable.WorkSheet.Cells[tableCellAdress].Value = propertyValue;
+
                 }
             }
             excelTable.WorkSheet.Cells[wsSheet.Dimension.Address].AutoFitColumns();
             return excelTable;
         }
-        private static ExcelTable CreateExcelTable(ExcelWorksheet wsSheet, string tableName, IEnumerable<string> excelColumns, string startTableCellAddress, string endTableCellAddress, bool showTotal = false)
+        private static ExcelTable CreateExcelTable(ref ExcelWorksheet wsSheet, string tableName, IEnumerable<string> excelColumns, string startTableCellAddress, string endTableCellAddress, bool showTotal = false)
         {
             ExcelTable table;
             using (ExcelRange rng = wsSheet.Cells[$"{startTableCellAddress}:{endTableCellAddress}"])
@@ -122,15 +123,33 @@ namespace HomeBudgetWf.Excel
                 foreach (var columnName in columnsList)
                 {
                     var jObjectProperyValue = jsonObject[columnName].ToString();
-                    excelWorksheet.Cells[ExcelHelpers.AddRowAndColumnToCellAddress(tableStartAdress, i, j)].Value = jObjectProperyValue;
+                    var tablecell = ExcelHelpers.AddRowAndColumnToCellAddress(tableStartAdress, i, j);
+                    excelTable.WorkSheet.Cells[tablecell].Style.Numberformat.Format = SetFormatToCell(columnName);
+
+                    if (columnName.Contains("date", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        excelWorksheet.Cells[tablecell].Formula = @"=DATEVALUE(""" + jObjectProperyValue + @""")";
+                    }
+                    else
+                    {
+                        double number;
+                        if (double.TryParse(jObjectProperyValue, out number))
+                        {
+                            excelWorksheet.Cells[tablecell].Value = number;
+                        }
+                        else
+                        {
+                            excelWorksheet.Cells[tablecell].Value = jObjectProperyValue;
+                        }
+                    }
+
                     j++;
                 }
             }
 
         }
 
-        public static List<ExcelTable> CreateExcelMonthSummaryTableFromMovementsViewModel(ExcelWorksheet wsSheet, List<TransactionWithCategory> movementsModel,
-            IEnumerable<string> categories, int sheetYear = 0, string sheetTableName = null, bool? justExtrations = null, string startCell = null)
+        public static List<ExcelTable> CreateExcelMonthSummaryTableFromMovementsViewModel(ref ExcelWorksheet wsSheet, List<TransactionWithCategory> transactionWithCategories, int sheetYear = 0, string sheetTableName = null, bool? justExtrations = null, string startCell = null)
         {
 
             int minYear;
@@ -142,16 +161,16 @@ namespace HomeBudgetWf.Excel
             }
             else
             {
-                minYear = movementsModel.Min(mov => mov.DateOfTransaction.Year);
-                maxYear = movementsModel.Max(mov => mov.DateOfTransaction.Year);
+                minYear = transactionWithCategories.Min(mov => mov.DateOfTransaction.Year);
+                maxYear = transactionWithCategories.Max(mov => mov.DateOfTransaction.Year);
             }
 
 
             IEnumerable<string> newColumns = new[] { "Month", "Total" };
-            categories = Helpers.GetExtractionCategories(movementsModel, justExtrations);
+            IEnumerable<string> categories = Helpers.GetCategoriesFromTransactions(transactionWithCategories, justExtrations);
             categories = categories.OrderBy(c => c);
 
-            // and the new columns to the category
+            // Add the new columns to the category
             categories = newColumns.Concat(categories);
             var categoriesUpdated = categories as string[] ?? categories.ToArray();
 
@@ -159,26 +178,31 @@ namespace HomeBudgetWf.Excel
 
             // Create Excel table Header
             var endTableCellAddress = ExcelHelpers.AddRowAndColumnToCellAddress(startTableCell, 12, categoriesUpdated.Count() - 1);
-            var tableName = sheetTableName ?? "Tanble-";
+            var tableName = sheetTableName ?? "Tanble";
             List<ExcelTable> excelTables = new List<ExcelTable>();
             for (int year = minYear; year <= maxYear; year++)
             {
                 //give table Name
-                tableName = string.Concat(tableName, year);
+                var newTableName = string.Concat(tableName, year);
+
+                //Add name to table
+                var tableHederCell = ExcelHelpers.AddRowAndColumnToCellAddress(startTableCell, -1, 0);
+                wsSheet.Cells[tableHederCell].Value = $"Table from {year} - Extraction:{justExtrations} ";
 
                 //calculate Table sizes
                 endTableCellAddress = ExcelHelpers.AddRowAndColumnToCellAddress(startTableCell, 12, categoriesUpdated.Count() - 1);
-                var excelTable = CreateExcelTable(wsSheet, tableName, categoriesUpdated, startTableCell, endTableCellAddress, true);
+                var excelTable = CreateExcelTable(ref wsSheet, newTableName, categoriesUpdated, startTableCell, endTableCellAddress, true);
 
                 // Set Excel table content
                 for (int month = 1; month <= 12; month++)
                 {
                     for (int column = 0; column < categoriesUpdated.Length; column++)
                     {
-                        switch (categoriesUpdated[column])
+                        var ColumnName = categoriesUpdated[column];
+                        switch (ColumnName)
                         {
                             case "Month":
-                               
+
                                 if (DateTimeFormatInfo.CurrentInfo != null)
                                 {
                                     var monthName = string.Concat(DateTimeFormatInfo.CurrentInfo.GetMonthName(month));
@@ -186,19 +210,29 @@ namespace HomeBudgetWf.Excel
                                 }
 
                                 break;
-                            //case "Total":
-                            //    double totalCategory = ModelConverter.CategoriesMonthYearTotal(movementsModel, year, month, justExtrations);
-                            //    excelTable.WorkSheet.Cells[ExcelHelpers.AddRowAndColumnToCellAddress(startTableCell, month, column)].Value = totalCategory;
-                            //    break;
-                            //default:
-                            //    //Get summ for category
-                            //    var tablecell = ExcelHelpers.AddRowAndColumnToCellAddress(startTableCell, month, column);
-                            //    double totalCategory1 = ModelOperation.GetTotalforCategory(movementsModel, categoriesUpdated[column], year, month, justExtrations);
-                            //    excelTable.WorkSheet.Cells[tablecell].Style.Numberformat.Format = ExcelHelpers.SetFormatToCell("Amount");
-                            //    //add value tu excel cell
-                            //    wsSheet.Cells[tablecell].Value = totalCategory1;
-                            //    //AddExcelCellValue(row, tableStartColumn, totalCategory1, wsSheet);
-                            //    break;
+                            case "Total":
+                                var monthYearTransaction = Helpers.GetMonthYearTransaction(transactionWithCategories, year, month, justExtrations);
+                                decimal totalCategory = CalculationUtilities.GetTotalFromTransactionsWithCategoryModel(monthYearTransaction, justExtrations);
+
+                                //Add format and value to excel cell
+                                var totalTablecell = ExcelHelpers.AddRowAndColumnToCellAddress(startTableCell, month, column);
+                                excelTable.WorkSheet.Cells[totalTablecell].Style.Numberformat.Format = SetFormatToCell("Amount");
+                                excelTable.WorkSheet.Cells[totalTablecell].Value = totalCategory;
+
+                                break;
+                            default:
+
+                                //filter transactions to get the total
+                                var monthYearCategoryTransaction = Helpers.GetMonthYearTransaction(transactionWithCategories, year, month, justExtrations, ColumnName);
+                                decimal totalMonthYearCategory = CalculationUtilities.GetTotalFromTransactionsWithCategoryModel(monthYearCategoryTransaction, justExtrations);
+
+
+                                //Add format and value to excel cell
+                                var tablecell = ExcelHelpers.AddRowAndColumnToCellAddress(startTableCell, month, column);
+                                excelTable.WorkSheet.Cells[tablecell].Style.Numberformat.Format = SetFormatToCell("Amount");
+                                wsSheet.Cells[tablecell].Value = totalMonthYearCategory;
+
+                                break;
                         }
                     }
                 }
@@ -209,5 +243,25 @@ namespace HomeBudgetWf.Excel
             return excelTables;
         }
 
+        internal static string SetFormatToCell(string value)
+        {
+            if (value.Contains("date", StringComparison.CurrentCultureIgnoreCase))
+                value = "DateTime";
+
+
+            switch (value)
+            {
+                case "Id":
+                    return "#";
+                case "DateTime":
+                    return "dd/mm/yyyy";
+                case "Amount":
+                case "Balance":
+                case "Decimal":
+                    return "$ # ##0.00;[Red]$ -# ##0.00";
+                default:
+                    return "@";
+            }
+        }
     }
 }

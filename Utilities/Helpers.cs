@@ -223,7 +223,7 @@ namespace HomeBudgetWf.Utilities
         /// <param name="categories"></param>
         /// <param name="transactionWithCategories"></param>
         /// <returns></returns>
-        public static List<string> GetExtractionCategories(List<TransactionWithCategory> transactionWithCategories, bool? extraction = null)
+        public static List<string> GetCategoriesFromTransactions(List<TransactionWithCategory> transactionWithCategories, bool? extraction = null)
         {
             List<string> categoryList = new List<string>();
 
@@ -247,19 +247,25 @@ namespace HomeBudgetWf.Utilities
             return categoryList;
         }
 
-        public static List<TransactionWithCategory> GetMonthYearTransaction(List<TransactionWithCategory> transactionWithCategories, int? year = null, int? month = null, bool? extraction = null)
+        public static List<TransactionWithCategory> GetMonthYearTransaction(List<TransactionWithCategory> transactionWithCategories, int? year = null, int? month = null, bool? extraction = null, string category = null)
         {
             List<TransactionWithCategory> selectedTransactionWithCategories = new List<TransactionWithCategory>();
+
+            if (transactionWithCategories == null || !transactionWithCategories.Any())
+                return transactionWithCategories;
+
+            selectedTransactionWithCategories = category != null ? transactionWithCategories.Where(t => t.Category == category).ToList() : transactionWithCategories;
+
 
             if (year.HasValue)
             {
                 if (month.HasValue)
                 {
-                    selectedTransactionWithCategories = transactionWithCategories.Where(mov => !string.IsNullOrEmpty(mov.Category) && mov.DateOfTransaction.Year == year && mov.DateOfTransaction.Month == month).ToList();
+                    selectedTransactionWithCategories = selectedTransactionWithCategories.Where(mov => !string.IsNullOrEmpty(mov.Category) && mov.DateOfTransaction.Year == year && mov.DateOfTransaction.Month == month).ToList();
                 }
                 else
                 {
-                    selectedTransactionWithCategories = transactionWithCategories.Where(mov => !string.IsNullOrEmpty(mov.Category) && mov.DateOfTransaction.Year == year).ToList();
+                    selectedTransactionWithCategories = selectedTransactionWithCategories.Where(mov => !string.IsNullOrEmpty(mov.Category) && mov.DateOfTransaction.Year == year).ToList();
                 }
             }
             else
@@ -267,11 +273,11 @@ namespace HomeBudgetWf.Utilities
 
                 if (month.HasValue)
                 {
-                    selectedTransactionWithCategories = transactionWithCategories.Where(mov => !string.IsNullOrEmpty(mov.Category) && mov.DateOfTransaction.Month == month).ToList();
+                    selectedTransactionWithCategories = selectedTransactionWithCategories.Where(mov => !string.IsNullOrEmpty(mov.Category) && mov.DateOfTransaction.Month == month).ToList();
                 }
                 else
                 {
-                    selectedTransactionWithCategories = transactionWithCategories.Where(mov => !string.IsNullOrEmpty(mov.Category)).ToList();
+                    selectedTransactionWithCategories = selectedTransactionWithCategories.Where(mov => !string.IsNullOrEmpty(mov.Category)).ToList();
                 }
             }
 
@@ -279,9 +285,9 @@ namespace HomeBudgetWf.Utilities
             {
                 List<TransactionWithCategory> newSelectedTransactionWithCategories;
                 if (extraction.GetValueOrDefault())
-                    newSelectedTransactionWithCategories = transactionWithCategories.Where(mov => mov.Amount < 0).ToList();
+                    newSelectedTransactionWithCategories = selectedTransactionWithCategories.Where(mov => mov.Amount < 0).ToList();
                 else
-                    newSelectedTransactionWithCategories = transactionWithCategories.Where(mov => mov.Amount > 0).ToList();
+                    newSelectedTransactionWithCategories = selectedTransactionWithCategories.Where(mov => mov.Amount > 0).ToList();
 
                 selectedTransactionWithCategories = newSelectedTransactionWithCategories;
             }
