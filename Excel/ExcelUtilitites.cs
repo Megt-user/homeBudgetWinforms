@@ -217,6 +217,7 @@ namespace HomeBudgetWf.Excel
                                 //Add format and value to excel cell
                                 var totalTablecell = ExcelHelpers.AddRowAndColumnToCellAddress(startTableCell, month, column);
                                 excelTable.WorkSheet.Cells[totalTablecell].Style.Numberformat.Format = SetFormatToCell("Amount");
+                                //TODO add formula to = SUM(C62:AK62) el ancho de la tabla
                                 excelTable.WorkSheet.Cells[totalTablecell].Value = totalCategory;
 
                                 break;

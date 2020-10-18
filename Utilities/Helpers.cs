@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using HomeBudgetWf.Models;
 using HomeBudgetWf.Models.BanksModel;
 using Newtonsoft.Json.Linq;
+using Serilog;
 
 namespace HomeBudgetWf.Utilities
 {
@@ -114,6 +115,9 @@ namespace HomeBudgetWf.Utilities
             else if (ArrayCointainStringtring(keyWordsString, "SKARPHEDIN"))
             {
                 keyWord = "Familly";
+            }else if (ArrayCointainStringtring(keyWordsString, "Itunes"))
+            {
+                keyWord = "App/Media";
             }
             //else if (ArrayCointainStringtring(keyWordsString, "Extra"))
             //{
@@ -124,7 +128,7 @@ namespace HomeBudgetWf.Utilities
             //}
 
             KeyWord selectedKeyWord = null;
-            if (!string.IsNullOrEmpty(keyWord))
+            if (!String.IsNullOrEmpty(keyWord))
                 selectedKeyWord = keyWordMatchs.FirstOrDefault(kw => kw.Value.Equals(keyWord, StringComparison.OrdinalIgnoreCase));
 
             return selectedKeyWord;
@@ -145,7 +149,7 @@ namespace HomeBudgetWf.Utilities
         public static Match ExactMatch(string input, string match)
         {
 
-            var isMatch = Regex.Match(input, string.Format(@"(?i)(?<= |^){0}(?= |$)", Regex.Escape(match)));
+            var isMatch = Regex.Match(input, String.Format(@"(?i)(?<= |^){0}(?= |$)", Regex.Escape(match)));
             return isMatch;
         }
 
@@ -170,7 +174,7 @@ namespace HomeBudgetWf.Utilities
             }
             else
             {
-                var mismatchKeyWords = string.Join(",", keyWordStringList);
+                var mismatchKeyWords = String.Join(",", keyWordStringList);
                 keyWord = new KeyWord()
                 {
                     Value = "Multiple matchs"
@@ -181,7 +185,7 @@ namespace HomeBudgetWf.Utilities
             return newTransaction;
         }
 
-        public List<String> GetNorwegianCities()
+        public List<string> GetNorwegianCities()
         {
             var norwegianCities = new List<string>()
             {
@@ -261,11 +265,11 @@ namespace HomeBudgetWf.Utilities
             {
                 if (month.HasValue)
                 {
-                    selectedTransactionWithCategories = selectedTransactionWithCategories.Where(mov => !string.IsNullOrEmpty(mov.Category) && mov.DateOfTransaction.Year == year && mov.DateOfTransaction.Month == month).ToList();
+                    selectedTransactionWithCategories = selectedTransactionWithCategories.Where(mov => !String.IsNullOrEmpty(mov.Category) && mov.DateOfTransaction.Year == year && mov.DateOfTransaction.Month == month).ToList();
                 }
                 else
                 {
-                    selectedTransactionWithCategories = selectedTransactionWithCategories.Where(mov => !string.IsNullOrEmpty(mov.Category) && mov.DateOfTransaction.Year == year).ToList();
+                    selectedTransactionWithCategories = selectedTransactionWithCategories.Where(mov => !String.IsNullOrEmpty(mov.Category) && mov.DateOfTransaction.Year == year).ToList();
                 }
             }
             else
@@ -273,11 +277,11 @@ namespace HomeBudgetWf.Utilities
 
                 if (month.HasValue)
                 {
-                    selectedTransactionWithCategories = selectedTransactionWithCategories.Where(mov => !string.IsNullOrEmpty(mov.Category) && mov.DateOfTransaction.Month == month).ToList();
+                    selectedTransactionWithCategories = selectedTransactionWithCategories.Where(mov => !String.IsNullOrEmpty(mov.Category) && mov.DateOfTransaction.Month == month).ToList();
                 }
                 else
                 {
-                    selectedTransactionWithCategories = selectedTransactionWithCategories.Where(mov => !string.IsNullOrEmpty(mov.Category)).ToList();
+                    selectedTransactionWithCategories = selectedTransactionWithCategories.Where(mov => !String.IsNullOrEmpty(mov.Category)).ToList();
                 }
             }
 
@@ -292,6 +296,84 @@ namespace HomeBudgetWf.Utilities
                 selectedTransactionWithCategories = newSelectedTransactionWithCategories;
             }
             return selectedTransactionWithCategories;
+        }
+
+        public static Transaction GetTransactionKeyWordMatch(TransactionAbstractClass transaction, KeyWord[] keyWordMatchs)
+        {
+            Transaction transactionTemp;
+            if (keyWordMatchs != null && keyWordMatchs.Any())
+            {
+                //Just one matchs
+                if (keyWordMatchs.Length == 1)
+                {
+                    transactionTemp = Helpers.CreateTransaction(transaction, keyWordMatchs.FirstOrDefault());
+                }
+                else
+                {
+                    var categories = Helpers.GetCategoryFromKeywordArray(keyWordMatchs);
+                    if (categories.Length == 1)
+                    {
+                        var keyword = keyWordMatchs.FirstOrDefault();
+                        Log.Information("keyWordMatchs {keywordsMismatch}, Selected KeyWord {@keyWord}.", String.Join(",", keyWordMatchs.Select(kw => kw.Value)), keyword);
+                        transactionTemp = Helpers.CreateTransaction(transaction, keyword);
+                    }
+                    else
+                    {
+                        var category = Helpers.ResolveExpenseCategories(categories);
+                        if (category != null)
+                        {
+                            var keyword = keyWordMatchs.FirstOrDefault(kw => kw.ExpenseCategory.Equals(category));
+                            Log.Information("SubCategories {categoriesMismatch}, Selected KeyWord {@keyWord}.", String.Join(",", categories.Select(c => c.Category)), keyword);
+                            transactionTemp = Helpers.CreateTransaction(transaction, keyword);
+                        }
+                        else
+                        {
+                            var keyWordTemp = Helpers.ResolveKeyWords(keyWordMatchs);
+                            if (keyWordTemp != null)
+                            {
+                                Log.Information("keyWordMatchs {keywordsMismatch}, Selected KeyWord {@keyWord}.", String.Join(",", keyWordMatchs.Select(kw => kw.Value)), keyWordTemp);
+                                transactionTemp = Helpers.CreateTransaction(transaction, keyWordTemp);
+                            }
+                            else
+                            {
+                                Log.Error("can't resolve keyWord miss matchs {keywordsMismatch}. description ({description})", String.Join(",", keyWordMatchs.Select(kw => kw.Value)), transaction.Description);
+                                transactionTemp = Helpers.CreateTransaction(transaction, keyWordTemp, keyWordMatchs.Select(kw => kw.Value).ToArray());
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                //TODO now match
+                var keyWordNowMatch = new KeyWord()
+                {
+                    Value = "Now match",
+                    ExpenseCategory = new ExpenseCategory()
+                    {
+                        Category = "Abra Cadabra"
+                    }
+                };
+                transactionTemp = Helpers.CreateTransaction(transaction, keyWordNowMatch);
+
+                //string[] values = transaction.Description.Split(' ');
+                //var descriptionsWords = values.GroupBy<string, string, int>(k => k, e => 1)
+                //    .Select(f => new KeyValuePair<string, int>(f.Key, f.Sum()))
+                //    .ToDictionary(k => k.Key, e => e.Value);
+                //foreach (var word in descriptionsWords)
+                //{
+                //    if (needToCategorize.ContainsKey(word.Key))
+                //    {
+                //        needToCategorize[word.Key] = needToCategorize[word.Key] + word.Value;
+                //    }
+                //    else
+                //    {
+                //        needToCategorize.Add(word.Key, word.Value);
+                //    }
+                //}
+            }
+
+            return transactionTemp;
         }
     }
 
