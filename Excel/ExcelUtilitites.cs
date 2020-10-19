@@ -218,7 +218,11 @@ namespace HomeBudgetWf.Excel
                                 var totalTablecell = ExcelHelpers.AddRowAndColumnToCellAddress(startTableCell, month, column);
                                 excelTable.WorkSheet.Cells[totalTablecell].Style.Numberformat.Format = SetFormatToCell("Amount");
                                 //TODO add formula to = SUM(C62:AK62) el ancho de la tabla
-                                excelTable.WorkSheet.Cells[totalTablecell].Value = totalCategory;
+
+                                var startcell = ExcelHelpers.AddRowAndColumnToCellAddress(startTableCell, month, column +1);
+                                var endCell = ExcelHelpers.AddRowAndColumnToCellAddress(startTableCell, month, categoriesUpdated.Count() - 1);
+                                excelTable.WorkSheet.Cells[totalTablecell].Formula = $"SUM({startcell}:{endCell})";
+                                //excelTable.WorkSheet.Cells[totalTablecell].Value = totalCategory;
 
                                 break;
                             default:

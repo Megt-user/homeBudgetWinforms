@@ -29,11 +29,14 @@ namespace HomeBudgetWf.Utilities
                 transactionTemp = TransactionTemp(transactions[index], keyWords, keyWordMatchsList);
 
                 //If transaction didn't have a match tray with Contein
-                if (transactionTemp == null || transactionTemp.KeyWord?.Value == "Now match")
+                if (transactionTemp == null)
                 {
-                    var newKeyWordMatchs = keywordsList.Where(sub => transactionsDescription.Contains(sub,StringComparison.CurrentCultureIgnoreCase)).ToList();
+                    var newKeyWordMatchs = keywordsList.Where(sub => transactionsDescription.Contains(sub, StringComparison.CurrentCultureIgnoreCase)).ToList();
                     transactionTemp = TransactionTemp(transactions[index], keyWords, newKeyWordMatchs);
                 }
+
+                if (transactionTemp == null)
+                    transactionTemp = Helpers.CreateTransactionWithoutKeyWordMatch(transactions[index]);
 
                 transactionList.Add(transactionTemp);
 

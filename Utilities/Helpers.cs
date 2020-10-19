@@ -76,11 +76,11 @@ namespace HomeBudgetWf.Utilities
             }
             else if (ArrayCointainStringtring(keyWordsString, "BRUKÅS"))
             {
-                keyWord = "Sport";
+                keyWord = "BRUKÅS";
             }
             else if (ArrayCointainStringtring(keyWordsString, "Hermann Ivarson"))
             {
-                keyWord = "Utlaie";
+                keyWord = "Hermann Ivarson";
             }
             else if (ArrayCointainStringtring(keyWordsString, "Forsikring"))
             {
@@ -94,30 +94,37 @@ namespace HomeBudgetWf.Utilities
             //}
             else if (ArrayCointainStringtring(keyWordsString, "Hovden"))
             {
-                keyWord = "Fritid";
+                keyWord = "Hovden";
             }
             else if (ArrayCointainStringtring(keyWordsString, "cf"))
             {
-                keyWord = "House";
+                keyWord = "cf";
             }
             else if (ArrayCointainStringtring(keyWordsString, "HVASSER"))
             {
-                keyWord = "Fritid";
+                keyWord = "HVASSER";
             }
             else if (ArrayCointainStringtring(keyWordsString, "Husly"))
             {
-                keyWord = "House";
+                keyWord = "Husly";
             }
             else if (ArrayCointainStringtring(keyWordsString, "SANDEN CAMPING"))
             {
-                keyWord = "Fritid";
+                keyWord = "CAMPING";
             }
             else if (ArrayCointainStringtring(keyWordsString, "SKARPHEDIN"))
             {
-                keyWord = "Familly";
-            }else if (ArrayCointainStringtring(keyWordsString, "Itunes"))
+                keyWord = "skarphedin";
+            }
+            else if (ArrayCointainStringtring(keyWordsString, "Itunes"))
             {
-                keyWord = "App/Media";
+                keyWord = "Itunes";
+            } else if (ArrayCointainStringtring(keyWordsString, "Apple"))
+            {
+                keyWord = "Apple";
+            }else if (ArrayCointainStringtring(keyWordsString, "Vipps"))
+            {
+                keyWord = "Vipps";
             }
             //else if (ArrayCointainStringtring(keyWordsString, "Extra"))
             //{
@@ -129,7 +136,11 @@ namespace HomeBudgetWf.Utilities
 
             KeyWord selectedKeyWord = null;
             if (!String.IsNullOrEmpty(keyWord))
+            {
+                
+                var nn = keyWordMatchs.Where(kw => kw.Value.Equals(keyWord, StringComparison.OrdinalIgnoreCase)).ToArray();
                 selectedKeyWord = keyWordMatchs.FirstOrDefault(kw => kw.Value.Equals(keyWord, StringComparison.OrdinalIgnoreCase));
+            }
 
             return selectedKeyWord;
 
@@ -298,9 +309,23 @@ namespace HomeBudgetWf.Utilities
             return selectedTransactionWithCategories;
         }
 
+        public static Transaction CreateTransactionWithoutKeyWordMatch(TransactionAbstractClass transaction)
+        {
+
+            var keyWordNowMatch = new KeyWord()
+            {
+                Value = "Now match",
+                ExpenseCategory = new ExpenseCategory()
+                {
+                    Category = "Abra Cadabra"
+                }
+            };
+            var transactionTemp = Helpers.CreateTransaction(transaction, keyWordNowMatch);
+            return transactionTemp;
+        }
         public static Transaction GetTransactionKeyWordMatch(TransactionAbstractClass transaction, KeyWord[] keyWordMatchs)
         {
-            Transaction transactionTemp;
+            Transaction transactionTemp = null;
             if (keyWordMatchs != null && keyWordMatchs.Any())
             {
                 //Just one matchs
@@ -345,16 +370,7 @@ namespace HomeBudgetWf.Utilities
             }
             else
             {
-                //TODO now match
-                var keyWordNowMatch = new KeyWord()
-                {
-                    Value = "Now match",
-                    ExpenseCategory = new ExpenseCategory()
-                    {
-                        Category = "Abra Cadabra"
-                    }
-                };
-                transactionTemp = Helpers.CreateTransaction(transaction, keyWordNowMatch);
+
 
                 //string[] values = transaction.Description.Split(' ');
                 //var descriptionsWords = values.GroupBy<string, string, int>(k => k, e => 1)

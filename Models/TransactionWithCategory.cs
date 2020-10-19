@@ -24,8 +24,8 @@ namespace HomeBudgetWf.Models
             Amount = transaction.Amount;
             Balance = transaction.Balance;
             OthersDetails = transaction.OthersDetails;
-            KeyWord = transaction.KeyWord.Value;
-            Category = transaction.KeyWord.ExpenseCategory.Category;
+            KeyWord = transaction.KeyWord?.Value;
+            Category = transaction.KeyWord?.ExpenseCategory?.Category;
             return this;
         }
     }
