@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using HomeBudgetWf.DataTable;
 using HomeBudgetWf.Excel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -39,6 +40,9 @@ namespace HomeBudgetWf
             {
                 OutToLogTextBox($"number Of Transactions = {_transactionJsonArray?.Count}");
             }
+            dataGridView1.DataSource = DataTableConv.toDataTable(_transactionJsonArray);
+
+            dataGridView1.Refresh();
         }
         private void buttonOpenCategories_Click(object sender, EventArgs e)
         {
@@ -61,7 +65,7 @@ namespace HomeBudgetWf
 
             comboBox1.DataSource = list;
             comboBox1.Refresh();
-            dataGridView1.DataSource = _categoriesJsonArray;
+            dataGridView1.DataSource = DataTableConv.toDataTable(_categoriesJsonArray);
 
             dataGridView1.Refresh();
 
@@ -80,45 +84,19 @@ namespace HomeBudgetWf
         {
             this.Close();
         }
-        DataTable dt = new DataTable();
+        System.Data.DataTable dt = new System.Data.DataTable();
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            dt = toDataTable(_categoriesJsonArray);
+            dt = DataTableConv.toDataTable(_categoriesJsonArray);
             if (dt != null)
             {
-                DataView dv = dt.DefaultView;
-                dv.RowFilter = string.Format("Category  LIKE '%{0}%'", comboBox1.SelectedItem);
-                dataGridView1.DataSource = dv;
+                //DataView dv = dt.DefaultView;
+                //dv.RowFilter = string.Format("Category  LIKE '%{0}%'", comboBox1.SelectedItem);
+                //dataGridView1.DataSource = dv;
             }
         }
 
-        private static DataTable toDataTable(JArray jArray)
-        {
-            var result = new DataTable();
-            //Initialize the columns, If you know the row type, replace this   
-            foreach (var row in jArray)
-            {
-                foreach (var jToken in row)
-                {
-                    var jproperty = jToken as JProperty;
-                    if (jproperty == null) continue;
-                    if (result.Columns[jproperty.Name] == null)
-                        result.Columns.Add(jproperty.Name, typeof(string));
-                }
-            }
-            foreach (var row in jArray)
-            {
-                var datarow = result.NewRow();
-                foreach (var jToken in row)
-                {
-                    var jProperty = jToken as JProperty;
-                    if (jProperty == null) continue;
-                    datarow[jProperty.Name] = jProperty.Value.ToString();
-                }
-                result.Rows.Add(datarow);
-            }
-            return result;
-        }
+      
     }
 }
