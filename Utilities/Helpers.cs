@@ -370,8 +370,6 @@ namespace HomeBudgetWf.Utilities
             }
             else
             {
-
-
                 //string[] values = transaction.Description.Split(' ');
                 //var descriptionsWords = values.GroupBy<string, string, int>(k => k, e => 1)
                 //    .Select(f => new KeyValuePair<string, int>(f.Key, f.Sum()))
