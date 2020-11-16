@@ -35,7 +35,7 @@ namespace HomeBudgetWf.Utilities
                     transactionTemp = TransactionTemp(transactions[index], keyWords, newKeyWordMatchs);
                 }
 
-                if (transactionTemp == null)
+                if (string.IsNullOrEmpty(transactionTemp?.KeyWord?.ExpenseCategory?.Category))
                     transactionTemp = Helpers.CreateTransactionWithoutKeyWordMatch(transactions[index]);
 
                 transactionList.Add(transactionTemp);

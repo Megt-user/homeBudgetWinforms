@@ -10,8 +10,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using HomeBudgetWf.DataTable;
 using HomeBudgetWf.Excel;
+using HomeBudgetWf.Models;
+using HomeBudgetWf.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using JsonConverter = HomeBudgetWf.Json.JsonConverter;
 
 namespace HomeBudgetWf
 {
@@ -19,6 +22,7 @@ namespace HomeBudgetWf
     {
         private JArray _transactionJsonArray;
         private JArray _categoriesJsonArray;
+        private List<TransactionWithCategory> _transactionWithCategories;
 
         public TransactionForm()
         {
@@ -40,9 +44,11 @@ namespace HomeBudgetWf
             {
                 OutToLogTextBox($"number Of Transactions = {_transactionJsonArray?.Count}");
             }
+            //var years = _transactionJsonArray.Select(j => j.SelectToken("DateOfTransaction")).Distinct().ToArray();
+            //comboBoxYear.DataSource = years;
             dataGridView1.DataSource = DataTableConv.toDataTable(_transactionJsonArray);
-
             dataGridView1.Refresh();
+            
         }
         private void buttonOpenCategories_Click(object sender, EventArgs e)
         {
@@ -61,7 +67,7 @@ namespace HomeBudgetWf
             }
 
 
-            var list = _categoriesJsonArray.Select(t => t["KeyWord"]).Distinct().ToArray();
+            var list = _categoriesJsonArray.Select(t => t["Category"]).Distinct().ToArray();
 
             comboBox1.DataSource = list;
             comboBox1.Refresh();
@@ -88,15 +94,43 @@ namespace HomeBudgetWf
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            dt = DataTableConv.toDataTable(_categoriesJsonArray);
+            var transactionWithCategories = JArray.Parse(JsonConvert.SerializeObject(_transactionWithCategories));
+            dt = DataTableConv.toDataTable(transactionWithCategories);
+            if (dt != null)
+            {
+                DataView dv = dt.DefaultView;
+                dv.RowFilter = string.Format("Category  LIKE '%{0}%'", comboBox1.SelectedItem);
+                dataGridView1.DataSource = dv;
+            }
+        }
+
+        private void comboBoxYear_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var noko = _transactionWithCategories.Where(t => t.DateOfTransaction.Year == comboBox1.SelectedIndex).ToArray();
+            var transactionWithCategories = JArray.Parse(JsonConvert.SerializeObject(noko));
+           
+            dt = DataTableConv.toDataTable(transactionWithCategories);
+            dataGridView1.DataSource = dt;
             if (dt != null)
             {
                 //DataView dv = dt.DefaultView;
                 //dv.RowFilter = string.Format("Category  LIKE '%{0}%'", comboBox1.SelectedItem);
-                //dataGridView1.DataSource = dv;
+               
             }
         }
 
-      
+        private void button4_Click(object sender, EventArgs e)
+        {
+            var transactionList = JsonConverter.ConvetJsonArrayToListTransaction(_transactionJsonArray);
+            var keyWords = JsonConverter.ConvertJsonArrayToListKeyWords(_categoriesJsonArray);
+            var transactionListToSave = Converter.GetTransactionListToSave(transactionList, keyWords);
+            var noko = transactionListToSave.Where(t => string.IsNullOrEmpty(t.KeyWord?.Value)).ToArray();
+            var noko2 = transactionListToSave.Where(t => string.IsNullOrEmpty(t.KeyWord?.ExpenseCategory?.Category)).ToArray();
+            _transactionWithCategories = Converter.ConvertTrasactionToTransactionWithCategories(transactionListToSave);
+            var years = _transactionWithCategories.Select(mov => mov.DateOfTransaction.Year).Distinct().ToArray();
+            comboBoxYear.DataSource = years;
+            dataGridView1.DataSource = _transactionWithCategories;
+            dataGridView1.Refresh();
+        }
     }
 }
